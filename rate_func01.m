@@ -15,6 +15,8 @@ X0=1;
 
 fun= @(time, X) rate_func0(time, X);
 
+step_func = @(rate_func_in, t, XA, h) implicit_midpoint_step(rate_func_in,t,XA,h);
+
 tspan=[0,10];
 
 colors = jet(10); 
@@ -22,7 +24,7 @@ i=1;
 
 figure;
 for h_ref=linspace(0.01,0.1,10)
-    [t_list,X_list,h_avg, num_evals] = fixed_step_integration(fun,backward_euler_step,tspan,X0,h_ref);
+    [t_list,X_list,h_avg, num_evals] = fixed_step_integration(fun,step_func,tspan,X0,h_ref);
     plot(t_list,X_list, 'Color', colors(i, :), DisplayName="Numerical, h=" +h_ref); hold on;
     i=i+1;
 end
@@ -33,6 +35,6 @@ X = solution01(t);
 plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical")
 
 legend()
-title("Explicit Midpoint Integration Plot -5x + 5cos(t) - sin(t);")
+title("Implicit Midpoint Integration Plot of -5x + 5cos(t) - sin(t);")
 xlabel("Time (~)")
 ylabel("X Value (~)")
