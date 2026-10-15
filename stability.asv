@@ -25,36 +25,38 @@ tspan=[0,20];
 
 figure; 
 
-h_ref = 0.38;
+h_ref = 0.45;
 
 
-t=linspace(0,20);
+t=0:h_ref:20;
 X = solution01(t);
 
-    [t_list,X_list,~, ~] = fixed_step_integration(fun,step_func1,tspan,X0,h_ref);
+    [t_list,X_list, ~, ~] = fixed_step_integration(fun,step_func1,tspan,X0,h_ref);
     subplot(4, 1, 1)
     
     plot(t_list,X_list, 'k', Linewidth=1,DisplayName="Numerical Implicit Midpoint"); hold on;
-    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend(); title("Four Methods to Find Approximate Solution of -5x + 5cos(t) - sin(t) vs. Analytical Solution;")
+    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend('location', 'best'); title("Four Methods to Find Approximate Solution of -5x + 5cos(t) - sin(t) vs. Analytical Solution;", "FontSize",16)
     subtitle('Numerical Implicit Midpoint Method vs Analytical Solution')
     ylabel("X Value (~)")
 
     subplot(4, 1, 2)
      [t_list,X_list,~, ~] = fixed_step_integration(fun,step_func2,tspan,X0,h_ref);
     plot(t_list,X_list, 'b', Linewidth=1,DisplayName="Numerical Explicit Midpoint"); hold on;
-    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend(); ylabel("X Value (~)")
+    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend('location', 'best'); ylabel("X Value (~)")
      subtitle('Numerical Explicit Midpoint Method vs Analytical Solution')
 
     subplot(4, 1, 3)
      [t_list,X_list,~, ~] = fixed_step_integration(fun,step_func3,tspan,X0,h_ref);
     plot(t_list,X_list, 'm', Linewidth=1, DisplayName="Numerical Forward Euler"); hold on;
-    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend(); ylabel("X Value (~)")
+    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend('location', 'best'); ylabel("X Value (~)")
     subtitle('Numerical Forward Euler Method vs Analytical Solution')
 
     subplot(4, 1, 4)
      [t_list,X_list,~, ~] = fixed_step_integration(fun,step_func1,tspan,X0,h_ref);
     plot(t_list,X_list, 'g', Linewidth=1,DisplayName="Numerical Backward Euler"); hold on;
-    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend()
+    plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend('location', 'best')
+    subtitle('Numerical Backward Euler Method vs Analytical Solution')
+
 
 
 xlabel("Time (~)")
