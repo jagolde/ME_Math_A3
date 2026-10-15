@@ -5,11 +5,12 @@
 %X: the input value of fun that we want to compute the derivative at
 %OUTPUTS:
 %J: approximation of Jacobian of fun at x
-function J = approximate_jacobian(fun,X)
+function [J, num_calls] = approximate_jacobian(fun,X)
     %set the step size to be tiny
     dx_scalar = 1e-6;
     
     f0 = fun(X); %evaluate function to determine number of outputs
+    num_calls = 1;
     
     num_in = length(X);     %determine dimension of the input vector
     num_out = length(f0);   %determine dimension of the output vector
@@ -41,6 +42,7 @@ function J = approximate_jacobian(fun,X)
 
 
         dX(n) = 0; %reset the dx vector to [0,...,0]^T
+        num_calls = num_calls + 2;
     end
     
 end

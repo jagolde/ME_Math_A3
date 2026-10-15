@@ -19,7 +19,7 @@ G_func4 = @(t, X0, h_ref) backward_euler_step(new_rate,t,X0,h_ref);
 
 sol3= @(t) solution01(t);
 
-h_vals = logspace(-5, 1, 100);
+h_vals = logspace(-5, 0.25, 100);
 t_ref = 0.492;
 e_list1= [];
 e_list2= [];
@@ -34,50 +34,66 @@ for h = h_vals
     e_list3(end+1) = epsilon3;
     epsilon4 = local_truncation_error(G_func4, sol3, t_ref, h);
     e_list4(end+1) = epsilon4;
+
 end
-errors1 = abs(e_list1);
-errors2 = abs(e_list2);
-errors3 = abs(e_list3);
-errors4 = abs(e_list4);
-loglog(h_vals, errors1, 'r--',displayname='Forward Euler', LineWidth=1.5); hold on
-loglog(h_vals, errors2, 'k', displayname='Explicit Midpoint', LineWidth=1.5);
-loglog(h_vals, errors3, 'g', displayname='Implicit Midpoint', LineWidth=1.5);
-loglog(h_vals, errors4, 'b--',displayname='Backward Euler', LineWidth=1.5);
+
+% errors1 = abs(e_list1);
+% loglog(h_vals, errors1, 'r.',displayname='Forward Euler', LineWidth=1.5); hold on
+
+% errors2 = abs(e_list2);
+% loglog(h_vals, errors2, 'k.', displayname='Explicit Midpoint', LineWidth=1.5);
+% 
+% errors3 = abs(e_list3);
+% loglog(h_vals, errors3, 'g.', displayname='Implicit Midpoint', LineWidth=1.5);
+% 
+% errors4 = abs(e_list4);
+% loglog(h_vals, errors4, 'b.',displayname='Backward Euler', LineWidth=1.5);
 
 
 %fit lines
-% errors = abs(e_list1);
-% valid = (errors > 0) & isfinite(errors);
-% 
-% p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
-% fit_errors = 10.^polyval(p, log10(h_vals));
-% 
-% 
-% figure;
-% loglog(h_vals, errors, 'r',displayname='Forward Euler'); hold on
-% loglog(h_vals, fit_errors, 'b--', displayname=sprintf('Forward Euler Fit, slope = %.2f', p(1)));
-% 
-% 
-% 
-% errors = abs(e_list2);
-% valid = (errors > 0) & isfinite(errors);
-% 
-% p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
-% fit_errors = 10.^polyval(p, log10(h_vals));
-% 
-% loglog(h_vals, errors, 'k', displayname='Explicit Midpoint');
-% loglog(h_vals, fit_errors, 'g--', displayname = sprintf('Explicit Midpoint Fit, slope = %.2f', p(1)));
+errors = abs(e_list1);
+valid = (errors > 0) & isfinite(errors);
+
+p1 = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
+fit_errors = 10.^polyval(p1, log10(h_vals));
+
+
+figure;
+loglog(h_vals, fit_errors, 'b', displayname=sprintf('Forward Euler Fit, slope = %.2f', p1(1))); hold on
+loglog(h_vals, errors, 'ro',displayname='Forward Euler'); 
 
 
 
+errors = abs(e_list2);
+valid = (errors > 0) & isfinite(errors);
+
+p2 = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
+fit_errors = 10.^polyval(p2, log10(h_vals));
 
 
-
-
-
-
+loglog(h_vals, fit_errors, 'k', displayname = sprintf('Explicit Midpoint Fit, slope = %.2f', p2(1)));
+loglog(h_vals, errors, 'go', displayname='Explicit Midpoint');
 
 legend('location', 'best')
-xlabel('Step Size (~)')
-ylabel('Measured Local Truncation Error $\epsilon$ (~)')
-title('Comparison of Four Different Step Methods for (-5x + 5cos(t) - sin(t))')
+xlabel('Step Size (-)')
+ylabel('Measured Local Truncation Error $\epsilon$ (-)')
+title('Local Truncation Error Fit for Explicit Methods (-5x + 5cos(t) - sin(t))')
+%title('Comparison of Local Truncation Error for Four Different Step Methods (-5x + 5cos(t) - sin(t))')
+
+
+
+% % Analytical
+% analytical_diff = abs(sol3(t_ref + h_vals) - sol3(t_ref));
+% valid = analytical_diff > 0 & isfinite(analytical_diff);
+% p = polyfit(log10(h_vals(valid)), ...
+%             log10(analytical_diff(valid)), 1);
+% fprintf('Analytical difference slope p = %.4f\n', p(1));
+% fit_diff = 10.^polyval(p, log10(h_vals));
+% figure;
+% loglog(h_vals, analytical_diff, 'r.', ...
+%     DisplayName='Analytical difference'); hold on;
+% loglog(h_vals, fit_diff, 'b-', ...
+%     DisplayName=sprintf('Fit, p = %.2f', p(1)));
+% xlabel('Step Size');
+% ylabel('$|X(t+h)-X(t)|$');
+% legend('Location','best');

@@ -20,8 +20,7 @@
 %OUTPUTS:
 %x: the estimate of the root computed by the function
 % exit_flag: an integer indicating whether or not the solver succeeded
-function [x, exit_flag, x_list] = multi_newton_solver(fun,x_guess,solver_params)
-x_list=[];
+function [x, exit_flag, num_calls] = multi_newton_solver(fun,x_guess,solver_params)
     %unpack values from struct (if fields in struct have been set)
     dxmin = 1e-14;
     if isfield(solver_params,'dxmin')
@@ -49,9 +48,11 @@ x_list=[];
 for count = 1:max_iter
     if numerical_diff
         fval = fun(x);
+        num_calls = num_calls + 1;
         J = approximate_jacobian(fun, x);
     else
         [fval, J] = fun(x);
+        num_calls = num_calls + 1;
     end
 
     if norm(fval) < ftol
@@ -84,7 +85,6 @@ end
     end
 
     x = x + dx;
-    x_list(end+1)=x;
 
     if norm(dx) < dxmin
         fval = fun(x); 
@@ -94,6 +94,7 @@ end
 
     if norm(dx) < dxmin
     fval = fun(x);
+    num_calls = num_calls + 1;
     fprintf('Stopped: tiny step at iteration %d; residual = %.3e\n', ...
         count, norm(fval))
     exit_flag = double(norm(fval) < ftol);

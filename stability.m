@@ -33,6 +33,7 @@ h_ref = 0.45;
     [t_list,X_list, h_avg, ~] = fixed_step_integration(fun,step_func1,tspan,X0,h_ref);
     subplot(4, 1, 1)
     plot(t_list,X_list, 'k', Linewidth=1,DisplayName="Numerical Implicit Midpoint"); hold on;
+    
     t=0:h_avg:20;
     X = solution01(t);
     plot(t,X, 'r--', LineWidth=2, DisplayName="Analytical"); legend('location', 'best'); title("Four Methods to Find Approximate Solution of -5x + 5cos(t) - sin(t) vs. Analytical Solution;", "FontSize",16)
