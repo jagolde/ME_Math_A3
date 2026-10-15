@@ -12,18 +12,22 @@
 %X_list: the vector of X, [X0';X1';X2';...;(X_end)'] at each time step
 %h_avg: the average step size
 %num_evals: total number of calls made to rate_func_in during the integration
-function [t_list,X_list,h_avg, num_evals] = ...
-fixed_step_integration(rate_func_in,step_func,tspan,X0,h_ref)
+function [t_list,X_list,h_avg,num_evals] = ...
+    fixed_step_integration(rate_func_in,step_func,tspan,X0,h_ref)
+
     num_evals = 0;
-    X_list = [];
-    t_list = [];
-    XB=X0;
-    N=ceil((tspan(2)-tspan(1))/h_ref);
-    h_avg =(tspan(2)-tspan(1))/N;
-        for t = tspan(1):h_avg:tspan(2)
-            [XB, num] = step_func(rate_func_in, t, XB, h_avg);
-            X_list(end+1) = XB;
-            t_list(end+1) = t;
-            num_evals = num_evals+num;
-        end
+    N = ceil((tspan(2)-tspan(1))/h_ref);
+    h_avg = (tspan(2)-tspan(1))/N;
+
+    t_list = linspace(tspan(1),tspan(2),N+1)';
+    X_list = zeros(N+1,numel(X0));
+    X_list(1,:) = X0(:)';
+
+    XA = X0;
+    for n = 1:N
+        [XB,num] = step_func(rate_func_in,t_list(n),XA,h_avg);
+        X_list(n+1,:) = XB(:)';
+        XA = XB;
+        num_evals = num_evals + num;
+    end
 end
