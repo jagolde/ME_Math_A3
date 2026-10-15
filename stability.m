@@ -25,7 +25,7 @@ tspan=[0,20];
 
 figure; 
 
-h_ref = 0.38;
+h_ref = 0.45;
 
 
 t=0:h_ref:20;
