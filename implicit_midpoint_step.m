@@ -14,6 +14,5 @@
 function [XB,num_evals] = implicit_midpoint_step(rate_func_in,t,XA,h)
    G_func= @(XB) XA+h*rate_func_in(t+(h/2), 0.5*(XA+XB))-XB;
    solver_params = struct();
-   [XB, exit_flag, x_list] = multi_newton_solver(G_func, XA,solver_params);
-   num_evals=length(x_list);
+   [XB, exit_flag, num_evals] = multi_newton_solver(G_func, XA,solver_params);
 end

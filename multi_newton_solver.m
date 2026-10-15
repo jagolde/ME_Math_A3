@@ -22,6 +22,7 @@
 % exit_flag: an integer indicating whether or not the solver succeeded
 function [x, exit_flag, num_calls] = multi_newton_solver(fun,x_guess,solver_params)
     %unpack values from struct (if fields in struct have been set)
+    num_calls = 0;
     dxmin = 1e-14;
     if isfield(solver_params,'dxmin')
         dxmin = solver_params.dxmin;

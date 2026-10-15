@@ -4,6 +4,14 @@ end
 function X = solution01(t)
 X = cos(t);
 end
+
+function dXdt = rate_func02(t,X)
+dXdt = [0,-1;1,0]*X;
+end
+function X = solution02(t)
+X = [cos(t);sin(t)];
+end
+
 clear;
 set(groot, 'DefaultTextInterpreter', 'latex');
 set(groot, 'DefaultAxesTickLabelInterpreter', 'latex');
@@ -11,13 +19,13 @@ set(groot, 'DefaultLegendInterpreter', 'latex');
 close all
 
 
-new_rate= @(t, X) rate_func01(t, X);
+new_rate= @(t, X) rate_func02(t, X);
 G_func1 = @(t, X0, h_ref) forward_euler_step(new_rate,t,X0,h_ref);
 G_func2 = @(t, X0, h_ref) explicit_midpoint_step(new_rate,t,X0,h_ref);
 G_func3 = @(t, X0, h_ref) implicit_midpoint_step(new_rate,t,X0,h_ref);
 G_func4 = @(t, X0, h_ref) backward_euler_step(new_rate,t,X0,h_ref);
 
-sol3= @(t) solution01(t);
+sol3= @(t) solution02(t);
 
 h_vals = logspace(-5, 0.25, 100);
 t_ref = 0.492;
@@ -51,12 +59,11 @@ end
 
 
 %fit lines
-errors = abs(e_list1);
+errors = abs(e_list3);
 valid = (errors > 0) & isfinite(errors);
 
 p1 = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
 fit_errors = 10.^polyval(p1, log10(h_vals));
-
 
 figure;
 loglog(h_vals, fit_errors, 'b', displayname=sprintf('Forward Euler Fit, slope = %.2f', p1(1))); hold on
@@ -64,7 +71,8 @@ loglog(h_vals, errors, 'ro',displayname='Forward Euler');
 
 
 
-errors = abs(e_list2);
+
+errors = abs(e_list4);
 valid = (errors > 0) & isfinite(errors);
 
 p2 = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
@@ -83,17 +91,23 @@ title('Local Truncation Error Fit for Explicit Methods (-5x + 5cos(t) - sin(t))'
 
 
 % % Analytical
-% analytical_diff = abs(sol3(t_ref + h_vals) - sol3(t_ref));
+% analytical_diff = vecnorm( ...
+%     sol3(t_ref + h_vals) - sol3(t_ref), 2, 1);
+% 
 % valid = analytical_diff > 0 & isfinite(analytical_diff);
+% 
 % p = polyfit(log10(h_vals(valid)), ...
 %             log10(analytical_diff(valid)), 1);
+% 
 % fprintf('Analytical difference slope p = %.4f\n', p(1));
+% 
 % fit_diff = 10.^polyval(p, log10(h_vals));
+% 
 % figure;
 % loglog(h_vals, analytical_diff, 'r.', ...
 %     DisplayName='Analytical difference'); hold on;
 % loglog(h_vals, fit_diff, 'b-', ...
 %     DisplayName=sprintf('Fit, p = %.2f', p(1)));
 % xlabel('Step Size');
-% ylabel('$|X(t+h)-X(t)|$');
+% ylabel('$\|X(t+h)-X(t)\|_2$');
 % legend('Location','best');
