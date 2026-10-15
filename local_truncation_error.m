@@ -1,0 +1,4 @@
+function epsilon = local_truncation_error(G_func, X_func,t, h)
+X0 = X_func(t)
+epsilon = norm(G_func(t, X0, h)-X_func(t+h));
+end

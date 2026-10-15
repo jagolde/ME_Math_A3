@@ -4,12 +4,13 @@ end
 function X = solution01(t)
 X = cos(t);
 end
-
+clear;
 set(groot, 'DefaultTextInterpreter', 'latex');
 set(groot, 'DefaultAxesTickLabelInterpreter', 'latex');
 set(groot, 'DefaultLegendInterpreter', 'latex');
 
 close all
+
 X0=1;
 
 fun= @(time, X) rate_func0(time, X);
@@ -21,7 +22,7 @@ i=1;
 
 figure;
 for h_ref=linspace(0.01,0.1,10)
-    [t_list,X_list,h_avg, num_evals] = explicit_midpoint_fixed_step_integration(fun,tspan,X0,h_ref);
+    [t_list,X_list,h_avg, num_evals] = fixed_step_integration(fun,backward_euler_step,tspan,X0,h_ref);
     plot(t_list,X_list, 'Color', colors(i, :), DisplayName="Numerical, h=" +h_ref); hold on;
     i=i+1;
 end

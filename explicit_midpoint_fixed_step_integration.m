@@ -13,15 +13,25 @@
 function [t_list,X_list,h_avg, num_evals] = ...
     explicit_midpoint_fixed_step_integration(rate_func_in,tspan,X0,h_ref)
     num_evals = 0;
-    N=ceil((tspan(2)-tspan(1))/h_ref);
-    h_avg =(tspan(2)-tspan(1))/N;
+    
     X_list = [];
     t_list = [];
     XB=X0;
-    for t = tspan(1):h_avg:tspan(2)
-        [XB, num] = explicit_midpoint_step(rate_func_in, t, XB, h_ref);
+    if length(tspan) == 1
+        [XB, num] = explicit_midpoint_step(rate_func_in, tspan, XB, h_ref);
+        XB
         X_list(end+1) = XB;
-        t_list(end+1) = t;
+        t_list(end+1) = tspan;
         num_evals = num_evals+num;
+    else
+        N=ceil((tspan(2)-tspan(1))/h_ref);
+        h_avg =(tspan(2)-tspan(1))/N;
+        for t = tspan(1):h_avg:tspan(2)
+            [XB, num] = explicit_midpoint_step(rate_func_in, t, XB, h_avg);
+            XB
+            X_list(end+1) = XB;
+            t_list(end+1) = t;
+            num_evals = num_evals+num;
+        end
     end
 end
