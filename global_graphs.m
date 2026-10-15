@@ -4,6 +4,14 @@ end
 function X = solution01(t)
 X = cos(t);
 end
+
+function dXdt = rate_func02(t,X)
+dXdt = [0,-1;1,0]*X;
+end
+function X = solution02(t)
+X = [cos(t);sin(t)];
+end
+
 clear;
 set(groot, 'DefaultTextInterpreter', 'latex');
 set(groot, 'DefaultAxesTickLabelInterpreter', 'latex');
@@ -17,8 +25,8 @@ G_func3=@(rate_func, t, X, h) implicit_midpoint_step(rate_func, t, X, h);
 G_func4=@(rate_func, t, X, h) backward_euler_step(rate_func, t, X, h);
 
 
-new_rate  = @(t, X) rate_func01(t, X);
-sol3      = @(t) solution01(t);
+new_rate  = @(t, X) rate_func02(t, X);
+sol3      = @(t) solution02(t);
 
 h_vals = logspace(-5, -1, 100);
 t_ref  = [0, 10];
@@ -28,21 +36,27 @@ e_list2 = zeros(size(h_vals));
 e_list3 = zeros(size(h_vals));
 e_list4 = zeros(size(h_vals));
 
+num_calls1 = [];
+num_calls2 = [];
+num_calls3 = [];
+num_calls4 = [];
+
 for i = 1:numel(h_vals)
-    e_list1(i) = global_truncation_error(new_rate, G_func1, sol3, t_ref, h_vals(i));
-    e_list2(i) = global_truncation_error(new_rate, G_func2, sol3, t_ref, h_vals(i));
-    e_list3(i) = global_truncation_error(new_rate, G_func3, sol3, t_ref, h_vals(i));
-    e_list4(i) = global_truncation_error(new_rate, G_func4, sol3, t_ref, h_vals(i));
+    [e_list1(i), num_calls1(i)] = global_truncation_error(new_rate, G_func1, sol3, t_ref, h_vals(i));
+    [e_list2(i), num_calls2(i)] = global_truncation_error(new_rate, G_func2, sol3, t_ref, h_vals(i));
+    [e_list3(i), num_calls3(i)] = global_truncation_error(new_rate, G_func3, sol3, t_ref, h_vals(i));
+    [e_list4(i), num_calls4(i)] = global_truncation_error(new_rate, G_func4, sol3, t_ref, h_vals(i));
 end
+%% 
 
 errors1 = abs(e_list1);
 errors2 = abs(e_list2);
 errors3 = abs(e_list3);
 errors4 = abs(e_list4);
-loglog(h_vals, errors1, 'r-','MarkerSize',2, displayname='Forward Euler'); hold on
-loglog(h_vals, errors2, 'mo','MarkerSize',2, displayname='Explicit Midpoint');
-loglog(h_vals, errors3, 'b-','MarkerSize',2, displayname='Implicit Midpoint');
-loglog(h_vals, errors4, 'go','MarkerSize',2,displayname='Backward Euler');
+% loglog(num_calls1, errors1, 'r-','MarkerSize',2, displayname='Forward Euler'); hold on
+% loglog(num_calls2, errors2, 'mo','MarkerSize',2, displayname='Explicit Midpoint');
+% loglog(num_calls3, errors3, 'b-','MarkerSize',2, displayname='Implicit Midpoint');
+% loglog(num_calls4, errors4, 'go','MarkerSize',2,displayname='Backward Euler');
 
 %loglog(h_vals, fit_errors, 'k','LineWidth',1.5);
 xlabel('H Values (-)')
@@ -53,11 +67,13 @@ legend()
 
 
 %fit lines
-% errors = abs(e_list1);
-% valid = (errors > 0) & isfinite(errors);
-% 
-% p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
-% fit_errors = 10.^polyval(p, log10(h_vals));
+errors = abs(e_list3);
+h_vals = num_calls3;
+valid = (errors > 0) & isfinite(errors);
+
+p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
+p(1)
+fit_errors = 10.^polyval(p, log10(h_vals));
 % 
 % 
 % figure;
@@ -66,11 +82,13 @@ legend()
 % 
 % 
 % 
-% errors = abs(e_list2);
-% valid = (errors > 0) & isfinite(errors);
-% 
-% p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
-% fit_errors = 10.^polyval(p, log10(h_vals));
+errors = abs(e_list4);
+h_vals = num_calls4;
+valid = (errors > 0) & isfinite(errors);
+
+p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
+p(1)
+fit_errors = 10.^polyval(p, log10(h_vals));
 % 
 % loglog(h_vals, errors, 'k', displayname='Explicit Midpoint');
 % loglog(h_vals, fit_errors, 'g--', displayname = sprintf('Explicit Midpoint Fit, slope = %.2f', p(1)));
