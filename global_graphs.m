@@ -39,17 +39,15 @@ errors1 = abs(e_list1);
 errors2 = abs(e_list2);
 errors3 = abs(e_list3);
 errors4 = abs(e_list4);
-loglog(h_vals, errors1, 'r-','MarkerSize',2, displayname='Forward Euler'); hold on
-loglog(h_vals, errors2, 'mo','MarkerSize',2, displayname='Explicit Midpoint');
-loglog(h_vals, errors3, 'b-','MarkerSize',2, displayname='Implicit Midpoint');
-loglog(h_vals, errors4, 'go','MarkerSize',2,displayname='Backward Euler');
+loglog(h_vals, errors1, 'r--','MarkerSize',4, displayname='Forward Euler'); hold on
+loglog(h_vals, errors2, 'mo','MarkerSize',4, displayname='Explicit Midpoint');
+loglog(h_vals, errors3, 'b--','MarkerSize',4, displayname='Implicit Midpoint');
+loglog(h_vals, errors4, 'go','MarkerSize',4,displayname='Backward Euler');
 
 %loglog(h_vals, fit_errors, 'k','LineWidth',1.5);
-xlabel('H Values (-)')
-ylabel('Epsilon Values (-)')
+
 % title('Log Plot of Rate Func 1')
-title('Global Truncation Error vs Step Size Experiment: All Four Methods')
-legend()
+
 
 
 %fit lines
@@ -85,6 +83,6 @@ legend()
 
 
 legend('location', 'best')
-xlabel('Step Size (~)')
-ylabel('Measured Local Truncation Error $\epsilon$ (~)')
-title('Comparison of Four Different Step Methods for (-5x + 5cos(t) - sin(t))')
+xlabel('Step Size ()')
+ylabel('Measured Global Truncation Error $\epsilon$ (~)')
+title('Global Truncation Error vs Step Size Experiment: Four Different Step Methods for (-5x + 5cos(t) - sin(t))')

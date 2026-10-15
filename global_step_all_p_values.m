@@ -1,0 +1,64 @@
+function dXdt = rate_func01(t,X)
+dXdt = -5*X + 5*cos(t) - sin(t);
+end
+function X = solution01(t)
+X = cos(t);
+end
+clear;
+set(groot, 'DefaultTextInterpreter', 'latex');
+set(groot, 'DefaultAxesTickLabelInterpreter', 'latex');
+set(groot, 'DefaultLegendInterpreter', 'latex');
+close all
+
+
+G_func1 = @(rate_func, t, X, h) forward_euler_step(rate_func, t, X, h);
+G_func2 =@(rate_func, t, X, h) explicit_midpoint_step(rate_func, t, X, h);
+G_func3=@(rate_func, t, X, h) implicit_midpoint_step(rate_func, t, X, h);
+G_func4=@(rate_func, t, X, h) backward_euler_step(rate_func, t, X, h);
+
+
+new_rate  = @(t, X) rate_func01(t, X);
+sol3      = @(t) solution01(t);
+
+h_vals = logspace(-5, -1, 100);
+t_ref  = [0, 4];
+
+e_list1 = zeros(size(h_vals));
+e_list2 = zeros(size(h_vals));
+e_list3 = zeros(size(h_vals));
+e_list4 = zeros(size(h_vals));
+
+for i = 1:numel(h_vals)
+    e_list1(i) = global_truncation_error(new_rate, G_func1, sol3, t_ref, h_vals(i));
+    e_list2(i) = global_truncation_error(new_rate, G_func2, sol3, t_ref, h_vals(i));
+    e_list3(i) = global_truncation_error(new_rate, G_func3, sol3, t_ref, h_vals(i));
+    e_list4(i) = global_truncation_error(new_rate, G_func4, sol3, t_ref, h_vals(i));
+end
+
+%fit lines
+errors1 = abs(e_list1);
+valid1 = (errors1 > 0) & isfinite(errors1);
+
+p1 = polyfit(log10(h_vals(valid1)), log10(errors1(valid1)), 1);
+
+
+errors2 = abs(e_list2);
+valid2 = (errors2 > 0) & isfinite(errors2);
+
+p2 = polyfit(log10(h_vals(valid2)), log10(errors2(valid2)), 1);
+
+
+errors3 = abs(e_list3);
+valid3 = (errors3 > 0) & isfinite(errors3);
+
+p3 = polyfit(log10(h_vals(valid3)), log10(errors3(valid3)), 1);
+
+errors4 = abs(e_list4);
+valid4 = (errors4 > 0) & isfinite(errors4);
+
+p4 = polyfit(log10(h_vals(valid4)), log10(errors4(valid4)), 1);
+
+p1(1)
+p2(1)
+p3(1)
+p4(1)
