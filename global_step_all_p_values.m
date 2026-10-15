@@ -1,9 +1,10 @@
 function dXdt = rate_func01(t,X)
-dXdt = -5*X + 5*cos(t) - sin(t);
+dXdt = [0,-1;1,0]*X;
 end
 function X = solution01(t)
-X = cos(t);
+X = [cos(t);sin(t)];
 end
+
 clear;
 set(groot, 'DefaultTextInterpreter', 'latex');
 set(groot, 'DefaultAxesTickLabelInterpreter', 'latex');
@@ -62,3 +63,24 @@ p1(1)
 p2(1)
 p3(1)
 p4(1)
+
+elist = zeros(size(h_vals));
+
+for t=0:4
+
+    for i = 1:numel(h_vals)
+    
+        analytical_diff = vecnorm( ...
+            sol3(t + h_vals(i)) - sol3(t), 2, 1);
+        elist(i)= analytical_diff;
+    
+    end
+end
+
+
+valid = elist > 0 & isfinite(elist);
+
+p = polyfit(log10(h_vals(valid)), ...
+            log10(elist(valid)), 1);
+
+fprintf('Analytical difference slope p = %.4f\n', p(1));
