@@ -6,7 +6,7 @@ X = cos(t);
 end
 close all
 
-G_func = @(t, X0, h_ref) forward_euler_fixed_step_integration(new_rate,t,X0,h_ref);
+G_func = @(t, X0, h_ref) forward_euler_step(new_rate,t,X0,h_ref);
 
 new_rate= @(t, X) rate_func01(t, X);
 sol3= @(t) solution01(t);
@@ -14,18 +14,27 @@ sol3= @(t) solution01(t);
 h_vals = logspace(-5, 1, 100);
 t_ref = 0.492;
 e_list= [];
-figure;
 for h = h_vals
     epsilon = local_truncation_error(G_func, sol3, t_ref, h);
     e_list(end+1) = epsilon;
 end
 
-p = polyfit(h_vals, e_list, 1);
+errors = abs(e_list);
+valid = (errors > 0) & isfinite(errors);
 
+p = polyfit(log10(h_vals(valid)), log10(errors(valid)), 1);
+fit_errors = 10.^polyval(p, log10(h_vals));
 
+figure;
+loglog(h_vals, errors); hold on
+loglog(h_vals, fit_errors, 'r-');
 
-loglog(h_vals, e_list); hold on
-loglog(h_vals, exp(polyval(p, h_vals)), 'b--', 'LineWidth', 2);
+xlabel('H Values')
+ylabel('Epsilon Values')
+title('Log Plot of Rate Func 1')
+legend('Computed error', sprintf('Fit: slope = %.2f', p(1)), ...
+       'Location', 'best')
+
 
 
 xlabel('H Values')
